@@ -5,6 +5,8 @@ function getIndex(state, action) {
 
 const initialState = {
   pizzas: [],
+  totalPizza: 0,
+  totalPrice: 0,
 };
 
 const menuSlice = createSlice({
@@ -24,14 +26,37 @@ const menuSlice = createSlice({
     },
     increase(state, action) {
       state.pizzas[getIndex(state, action)].quantity += 1;
+      state.totalPizza += 1;
+      state.totalPrice += state.pizzas[getIndex(state, action)].unitPrice;
     },
     decrease(state, action) {
       state.pizzas[getIndex(state, action)].quantity -= 1;
+      state.totalPizza -= 1;
+      state.totalPrice -= state.pizzas[getIndex(state, action)].unitPrice;
     },
     delete(state, action) {
-      state.pizzas[getIndex(state, action)].quantity = 0;
+      const index = getIndex(state, action);
+      state.totalPizza -= state.pizzas[index].quantity;
+      state.totalPrice -=
+        state.pizzas[index].quantity * state.pizzas[index].unitPrice;
+      state.pizzas[index].quantity = 0;
+      console.log(initialState);
+    },
+    clearCart(state, action) {
+      for (const pizzaId in state.pizzas) {
+        state.pizzas[pizzaId].quantity = 0;
+      }
+
+      state.totalPizza = 0;
+      state.totalPrice = 0;
     },
   },
 });
 export default menuSlice.reducer;
-export const { setData, increase, decrease, delete:deleteMe } = menuSlice.actions;
+export const {
+  setData,
+  increase,
+  decrease,
+  delete: deleteMe,
+  clearCart,
+} = menuSlice.actions;
